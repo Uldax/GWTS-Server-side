@@ -1,20 +1,18 @@
-import { default as Item, ItemType } from "./itemSchema";
+import { default as Event, EventType } from "./eventSchema";
 import { MongooseModel } from "../model";
 
 export class ItemModel extends MongooseModel {
   constructor() {
-    super(Item);
+    super(Event);
   }
 
-  //Map data from the Api to our structure
-  saveItem(itemData: ItemType) {
-    let item: any = new Item(itemData);
-    item.top = false;
-    item.demande = false;
+  saveItem(eventData: EventType) {
+    let event = new Event(eventData);
+
     // FIXME DO nothing if already in
-    return Item.update(
-      { id: itemData.id },
-      { $setOnInsert: item },
+    return Event.update(
+      { id: eventData.id },
+      { $setOnInsert: event },
       { upsert: true }
     ).exec();
   }
