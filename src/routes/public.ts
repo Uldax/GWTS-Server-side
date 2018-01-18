@@ -12,5 +12,4 @@ router.get("/ping", (req: Request, res: Response) => {
 });
 
 
-
 export = router;
