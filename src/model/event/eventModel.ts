@@ -1,12 +1,12 @@
 import { default as Event, EventType } from "./eventSchema";
 import { MongooseModel } from "../model";
 
-export class ItemModel extends MongooseModel {
+export class EventModel extends MongooseModel {
   constructor() {
     super(Event);
   }
 
-  saveItem(eventData: EventType) {
+  saveEvent(eventData: EventType) {
     let event = new Event(eventData);
 
     // FIXME DO nothing if already in
