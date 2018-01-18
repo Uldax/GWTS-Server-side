@@ -1,41 +1,30 @@
 import * as mongoose from "mongoose";
 
+
 class MongooseModel {
-  protected model: mongoose.Model<mongoose.Document>;
-  protected insertedDoc: Map<string, object>;
+  readonly model: mongoose.Model<mongoose.Document>;
 
   constructor(schema: mongoose.Model<mongoose.Document>) {
     this.model = schema;
-    this.insertedDoc = new Map<string, object>();
   }
 
-  public getModel() {
-    return this.model;
+  public async getById(objectId: mongoose.Types.ObjectId) {
+    const doc = await this.model.findById(objectId);
+    this.throwIfNotFound(doc, objectId)
+    return doc
   }
-
-  public getById(objectId: mongoose.Types.ObjectId) {
-    return this.model.findById(objectId).then((doc: any) => {
-      if (!doc) {
-        return Promise.reject({
-          code: 404,
-          message: `${objectId} doesn't exists`
-        });
-      } else {
-        return Promise.resolve(doc);
-      }
-    });
+  private throwIfNotFound(doc: any, request: any) {
+    if (!doc) {
+      throw new Error(
+        `${request} doesn't exists`
+      );
+    }
   }
-
   public async get(objectRequest: any) {
-    return this.model.find(objectRequest).then((doc: any) => {
-      if (!doc) {
-        return Promise.reject({
-          code: 404
-        });
-      } else {
-        return Promise.resolve(doc);
-      }
-    });
+    const doc = await this.model.find(objectRequest)
+    this.throwIfNotFound(doc, objectRequest)
+    return doc;
+
   }
 
   delete(objectId: mongoose.Types.ObjectId): mongoose.DocumentQuery<any, any> {
