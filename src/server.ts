@@ -1,17 +1,16 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import * as logger from "morgan";
+import * as morgan from "morgan";
 import * as compression from "compression";
 import * as errorHandler from "errorhandler";
 import * as dotenv from "dotenv";
 import * as routes from "./routing";
-
+import logger from "./helper/logger";
 //Database connexion
 import { connect } from "./helper/mongoConnexion";
-/**
- * Load environment variables from .env file, where API keys and passwords are configured.
- */
-dotenv.config({ path: ".env.dev" });
+import { setCors } from "./helper/cors";
+
+
 connect();
 
 const app = express();
@@ -26,7 +25,7 @@ if (!process.env.UPLOAD_DIR) {
  * Express configuration.
  */
 app.set("port", process.env.PORT || 3000);
-app.use(logger("dev"));
+app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
@@ -37,22 +36,7 @@ app.use(
 app.use(compression());
 
 //Set CORS headers
-app.all("/*", (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-  // Set custom headers for CORS
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-type,Accept,Authorization"
-  );
-  // When performing a cross domain request, you will recieve
-  // a preflighted request first. This is to check if our the app is safe.
-  if (req.method == "OPTIONS") {
-    res.status(200).end();
-  } else {
-    next();
-  }
-});
+app.all("/*", setCors);
 
 // catch 404 and forward to error handler
 app.use(
@@ -78,7 +62,7 @@ app.use("/api", routes);
  * Start Express server.
  */
 app.listen(app.get("port"), () => {
-  console.log(
+  logger.debug(
     "  App is running at http://localhost:%d in %s mode",
     app.get("port"),
     app.get("env")
