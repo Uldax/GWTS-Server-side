@@ -1,13 +1,14 @@
 
 //uploadService = require("./upload.service"),
-import multer from "multer"
-import crypto from "crypto"
+import * as multer from 'multer'
+import * as crypto from "crypto"
 import { join, extname } from 'path'
+import { Request, Response } from "express";
 
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, join(config.PROJECT_DIR, config.uploadFolderPath))
+    cb(null, process.env.UPLOAD_DIR as string)
   },
   filename: (req, file, cb) => {
     crypto.pseudoRandomBytes(16, (err, raw) => {
@@ -16,15 +17,15 @@ const storage = multer.diskStorage({
   }
 });
 
-function imageFilter(req, file, cb) {
+function imageFilter(req: any, file: any, cb: Function) {
   // accept image only
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|bmp|docx|pdf)$/)) {
+  if (!file.originalname.toLowerCase.match(/\.(jpg|jpeg|png|gif)$/)) {
     return cb(new Error('This type of file is not allowed!'));
   }
   cb(null, true);
 }
 
-const UploadMiddleware = multer({
+export const UploadMiddleware = multer({
   storage: storage,
   fileFilter: imageFilter,
   limits: {
@@ -33,4 +34,3 @@ const UploadMiddleware = multer({
 });
 
 
-module.exports = UploadMiddleware;

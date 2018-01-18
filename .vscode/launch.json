@@ -16,7 +16,8 @@
       ],
       "env": {
         "NODE_ENV": "development",
-        "MONGO_URI": "mongodb://localhost:27017/riviera"
+        "MONGO_URI": "mongodb://localhost:27017/riviera",
+        "UPLOAD_DIR": "/"
       },
       "console": "internalConsole",
       "sourceMaps": true,

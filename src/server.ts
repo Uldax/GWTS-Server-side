@@ -16,6 +16,12 @@ connect();
 
 const app = express();
 
+//env check
+if (!process.env.UPLOAD_DIR) {
+  throw "UPLOAD_DIR env is not set"
+}
+
+
 /**
  * Express configuration.
  */
